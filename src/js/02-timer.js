@@ -21,34 +21,33 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-   const currentDate = options.defaultDate.getTime();
+   const currentDate = new Date().getTime();
     selectedDate = selectedDates[0].getTime();
-
-
-    if (currentDate >= selectedDate) {
-      Notify.failure('Please choose a date in the future');
-      refs.btnStart.disabled = true;
-      
+    if (currentDate < selectedDate) {
+      return refs.btnStart.disabled = false;
     }
-    refs.btnStart.disabled = false;
-    return;
+      refs.btnStart.disabled = true;
+      Notify.failure('Please choose a date in the future');
+    
   },
 };
-console.log(options.defaultDate)
-  refs.btnStart.addEventListener('click', onClickBtn)
+
 flatpickr(refs.input, options);
 
 function onClickBtn() {
   timerId = setInterval(interfaceRender, 1000)
   refs.btnStart.disabled = true;
-  
 }
+refs.btnStart.addEventListener('click', onClickBtn)
+
 function interfaceRender() {
   const currentDate = new Date().getTime()
   let remainingTime = selectedDate - currentDate;
   
-  if (remainingTime <= '0') {
-   return Notify.success('The time is up', clearInterval(timerId))
+  if (remainingTime <= 0) {
+    Notify.success('The time is up', clearInterval(timerId));
+    refs.btnStart.disabled = true;
+    return;
   }
   renderTimers(convertMs(remainingTime));
 }
